@@ -3,4 +3,5 @@ nl.sp.accesscontrol
 
 Deze module zorgt voor extra afscherming tot gegevens van afdelingsgebruikers:
 
-- Afdelingsgebruikers kunnen geen relaties bewerken (wil zien)
+- Tabblad Tags verbergen voor gebruikers die geen recht hebben om dat tabblad te bekijken
+
