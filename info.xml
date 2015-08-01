@@ -1,24 +1,22 @@
 <?xml version="1.0"?>
 <extension key="nl.sp.accesscontrol" type="module">
   <file>accesscontrol</file>
-  <name>Accesscontrol for SP</name>
-  <description>Extra toegangsrechten afscherming voor afdelingsgebuikers</description>
+  <name>Access control voor SP</name>
+  <description>Extra afscherming voor afdelingsgebruikers CiviCRM</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>Jaap Jansma - CiviCooP</author>
+    <author>Jaap Jansma / Kevin Levie</author>
     <email>helpdesk@civicoop.org</email>
   </maintainer>
   <urls>
-    <url desc="Main Extension Page">http://FIXME</url>
-    <url desc="Documentation">http://FIXME</url>
-    <url desc="Support">http://FIXME</url>
+    <url desc="Support">http://www.civicoop.org</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
   <releaseDate>2015-05-22</releaseDate>
   <version>1.0</version>
   <develStage>alpha</develStage>
   <compatibility>
-    <ver>4.2</ver>
+    <ver>4.4</ver>
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
   <civix>
