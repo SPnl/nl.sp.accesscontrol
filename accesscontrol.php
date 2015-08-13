@@ -45,6 +45,9 @@ function accesscontrol_civicrm_optionValues(&$options, $name) {
   if ($name == 'from_email_address') {
     CRM_Accesscontrol_CiviMail_FromMailAddresses::optionValues($options, $name);
   }
+  if($name == 'activity_type') {
+    CRM_Accesscontrol_UI::restrictActivities($options);
+  }
 }
 
 /**
@@ -58,11 +61,31 @@ function accesscontrol_civicrm_permission(&$permissions) {
 
 /**
  * Implementation of hook_civicrm_pageRun
- * Link naar de webforms om een wijziging in contactgegevens/relatie door te geven.
+ * Check permissions for specific pages.
+ * + Link naar de webforms om een wijziging in contactgegevens/relatie door te geven.
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_pageRun
  */
 function accesscontrol_civicrm_pageRun(&$page) {
-  CRM_Accesscontrol_UI::pageRunHook($page);
+  CRM_Accesscontrol_UI::restrictPages($page);
+  CRM_Accesscontrol_UI::addContactPageLink($page);
+}
+
+/**
+ * Implementation of hook_civicrm_buildForm
+ * Check permissions for specific forms.
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ */
+function accesscontrol_civicrm_buildForm($formName, &$form) {
+  CRM_Accesscontrol_UI::restrictForms($formName, $form);
+}
+
+/**
+ * Implementation of hook_civicrm_navigationMenu
+ * Changes permissions for menu items in order to hide Evenementen / Lidmaatschappen.
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function accesscontrol_civicrm_navigationMenu(&$params) {
+  CRM_Accesscontrol_UI::modifyMenu($params);
 }
 
 /**
