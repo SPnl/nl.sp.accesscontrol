@@ -77,6 +77,7 @@ class CRM_Accesscontrol_Config {
     $permissions['access CiviMail reports'] = ts('CiviReport') . ': ' . ts('access CiviMail reports');
     $permissions['access local reports'] = ts('CiviReport') . ': ' . ts('access local reports');
     $permissions['restrict activities'] = ts('CiviCRM') . ': ' . ts('restrict activities');
+    $permissions['access to add or update message templates'] = ts('CiviCRM') . ': ' . ts('Permissioned to update or add message templates');
   }
 
   public function getCallingClass() {
