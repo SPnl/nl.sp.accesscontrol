@@ -108,7 +108,6 @@
                 {sClass:'crm-contact-activity-assignee_contact', bSortable:false},
                 {sClass:'crm-contact-activity-activity_date'},
                 {sClass:'crm-contact-activity-activity_status'},
-                {sClass:'crm-contact-activity-links', bSortable:false},
                 {sClass:'hiddenElement', bSortable:false}
             ],
             "bProcessing": true,
