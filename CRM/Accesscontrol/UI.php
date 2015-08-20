@@ -12,8 +12,7 @@ class CRM_Accesscontrol_UI {
         if ($tabKey == 'custom_Toegangsgegevens') {
           $config = CRM_Geostelsel_Config_Toegang::singleton();
           $unsetTabs[] = 'custom_' . $config->getToegangCustomGroup('id');
-        }
-        else {
+        } else {
           $unsetTabs[] = $tabKey;
         }
       }
@@ -21,7 +20,17 @@ class CRM_Accesscontrol_UI {
 
     foreach ($tabs as $key => $tab) {
       if (in_array($tab['id'], $unsetTabs)) {
-        unset($tabs[$key]);
+        if ($tab['id'] == 'activity') {
+          $tabs[$key]['url'] = CRM_Utils_System::url('civicrm/accesscontrol/contact/view/activity', "show=1&cid=$contactID&snippet=1");
+          $tabs[$key]['count'] = CRM_Accesscontrol_BAO_Activity::getActivitiesCount(array(
+            'contact_id' => $contactID,
+            'admin' => FALSE,
+            'caseId' => NULL,
+            'context' => 'activity',
+          ));
+        } else {
+          unset($tabs[$key]);
+        }
       }
     }
   }

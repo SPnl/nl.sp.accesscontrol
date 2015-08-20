@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<menu>
+    <item>
+        <path>civicrm/accesscontrol/contact/view/activity</path>
+        <path_arguments>show=1,cid=%%cid%%</path_arguments>
+        <title>Activities</title>
+        <page_callback>CRM_Accesscontrol_Page_ActivityTab</page_callback>
+    </item>
+    <item>
+        <path>civicrm/accesscontrol/ajax/contactactivity</path>
+        <page_callback>CRM_Accesscontrol_Page_AJAX::getContactActivity</page_callback>
+        <access_arguments>access CiviCRM</access_arguments>
+    </item>
+</menu>
