@@ -8,6 +8,30 @@
 
 require_once 'accesscontrol.civix.php';
 
+function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  if ($entity == 'activity' and $action == 'create') {
+    //check contacts in activity create
+    $allContactsAllowed = true;
+    foreach($params['target_contact_id'] as $cid) {
+      if (!CRM_Contact_BAO_Contact_Permission::allow($cid, CRM_Core_Permission::VIEW)) {
+        $allContactsAllowed = false;
+      }
+    }
+    foreach($params['assignee_contact_id'] as $cid) {
+      if (!CRM_Contact_BAO_Contact_Permission::allow($cid, CRM_Core_Permission::VIEW)) {
+        $allContactsAllowed = false;
+      }
+    }
+    foreach($params['source_contact_id'] as $cid) {
+      if (!CRM_Contact_BAO_Contact_Permission::allow($cid, CRM_Core_Permission::VIEW)) {
+        $allContactsAllowed = false;
+      }
+    }
+    if ($allContactsAllowed) {
+      $params['check_permissions'] = false;
+    }
+  }
+}
 
 /**
  * Implementation of hook_civicrm_aclWhereClause
