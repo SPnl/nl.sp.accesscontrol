@@ -35,7 +35,7 @@ function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &
 
 /**
  * Implementation of hook_civicrm_aclWhereClause
- * Voegt where-clause / restricties toe aan alle querie van deze gebruiker.
+ * Voegt where-clause / restricties toe aan alle queries van deze gebruiker.
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_aclWhereClause
  */
 function accesscontrol_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
@@ -68,9 +68,6 @@ function accesscontrol_civicrm_tabs(&$tabs, $contactID) {
 function accesscontrol_civicrm_optionValues(&$options, $name) {
   if ($name == 'from_email_address') {
     CRM_Accesscontrol_CiviMail_FromMailAddresses::optionValues($options, $name);
-  }
-  if($name == 'activity_type') {
-    CRM_Accesscontrol_UI::restrictActivities($options);
   }
 }
 

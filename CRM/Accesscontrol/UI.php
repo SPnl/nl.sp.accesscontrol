@@ -108,16 +108,5 @@ class CRM_Accesscontrol_UI {
     }
   }
 
-  public static function restrictActivities(&$activities) {
-
-    if(CRM_Core_Permission::check('restrict activities')) {
-      foreach($activities as $akey => $act) {
-        if(!in_array($act, array('Bijeenkomst', 'Telefoongesprek', 'Print PDF document'))) {
-          unset($activities[$akey]);
-        }
-      }
-    }
-  }
-
 
 }
