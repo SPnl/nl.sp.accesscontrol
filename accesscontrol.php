@@ -123,6 +123,12 @@ function accesscontrol_civicrm_enable() {
     throw new Exception('This extension requires nl.sp.geostelsel to be installed.');
   }
 
+  // Run installer
+  require_once __DIR__ . '/CRM/Accesscontrol/Installer.php'; // We zitten nog niet in de autoloader
+  $installer = CRM_Accesscontrol_Installer::singleton();
+  $installer->runInstall();
+
+  // Default install/enable
   _accesscontrol_civix_civicrm_enable();
 }
 

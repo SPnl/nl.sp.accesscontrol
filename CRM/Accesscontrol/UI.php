@@ -103,7 +103,7 @@ class CRM_Accesscontrol_UI {
         'template' => "CRM/Contact/Page/View/Summary/link_afdedit.tpl",
       ));
       $smarty = CRM_Core_Smarty::singleton();
-      $smarty->assign('link_afdedit', '/civicrm-afdeling/edit-contact?cid1=' . $cid);
+      $smarty->assign('link_afdedit', '/wijzigen-contact-afdeling?cid1=' . $cid);
 
     }
   }
