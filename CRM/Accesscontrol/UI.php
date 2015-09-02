@@ -103,19 +103,8 @@ class CRM_Accesscontrol_UI {
         'template' => "CRM/Contact/Page/View/Summary/link_afdedit.tpl",
       ));
       $smarty = CRM_Core_Smarty::singleton();
-      $smarty->assign('link_afdedit', '/civicrm-afdeling/edit-contact?cid1=' . $cid);
+      $smarty->assign('link_afdedit', '/wijzigen-contact-afdeling?cid1=' . $cid);
 
-    }
-  }
-
-  public static function restrictActivities(&$activities) {
-
-    if(CRM_Core_Permission::check('restrict activities')) {
-      foreach($activities as $akey => $act) {
-        if(!in_array($act, array('Bijeenkomst', 'Telefoongesprek', 'Print PDF document'))) {
-          unset($activities[$akey]);
-        }
-      }
     }
   }
 
