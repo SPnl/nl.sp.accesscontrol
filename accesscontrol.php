@@ -8,6 +8,8 @@
 
 require_once 'accesscontrol.civix.php';
 
+
+
 function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   if ($entity == 'activity' and $action == 'create') {
     //check contacts in activity create
@@ -138,6 +140,8 @@ function accesscontrol_civicrm_enable() {
  */
 function accesscontrol_civicrm_config(&$config) {
   _accesscontrol_civix_civicrm_config($config);
+
+  CRM_Accesscontrol_Filesystem::config($config);
 }
 
 /**
