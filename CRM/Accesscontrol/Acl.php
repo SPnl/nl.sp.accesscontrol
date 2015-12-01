@@ -21,8 +21,14 @@ class CRM_Accesscontrol_Acl {
       return TRUE;
     }
 
-    // Check passed, hand over to AclGenerator to extend where clause
-    CRM_Geostelsel_AclGenerator::generateWhereClause($type, $tables, $whereTables, $contactID, $where);
+    if ($type == CRM_Core_Permission::VIEW && CRM_Core_Permission::check('access all contacts (view)')) {
+      $where = '1';
+    } elseif (CRM_Core_Permission::check('access all contacts (edit)')) {
+      $where = '1';
+    } else {
+      // Check passed, hand over to AclGenerator to extend where clause
+      CRM_Geostelsel_AclGenerator::generateWhereClause($type, $tables, $whereTables, $contactID, $where);
+    }
   }
 
   public static function aclGroupList($type, $contactID, $tableName, &$allGroups, &$currentGroups) {
@@ -30,10 +36,20 @@ class CRM_Accesscontrol_Acl {
       return;
     }
     $group_access = new CRM_Geostelsel_Groep_ParentGroup();
-    $parent_groups = $group_access->getParentGroupsByContact($contactID);
-    foreach ($parent_groups as $gid) {
-      if (isset($allGroups[$gid])) {
-        $currentGroups[] = $gid;
+    if (CRM_Core_Permission::check('hide local groups')) {
+      $parent_groups = $group_access->parentGroups();
+      $subgroups = CRM_Contact_BAO_GroupNesting::getChildGroupIds($parent_groups);
+      foreach($allGroups as $gid => $label) {
+        if (!in_array($gid, $subgroups)) {
+          $currentGroups[] = $gid;
+        }
+      }
+    } else {
+      $parent_groups = $group_access->getParentGroupsByContact($contactID);
+      foreach ($parent_groups as $gid) {
+        if (isset($allGroups[$gid])) {
+          $currentGroups[] = $gid;
+        }
       }
     }
   }

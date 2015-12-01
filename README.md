@@ -3,7 +3,9 @@ nl.sp.accesscontrol
 
 Deze extensie regelt een aantal zaken om CiviCRM beter af te schermen voor SP-afdelingsgebruikers:
 
-- Aanpassingen in ACLs contacten en groepen (obv data uit geostelsel)
+- Aanpassingen in ACLs contacten en groepen (obv data uit geostelsel) afdelingen kunnen alleen hun eigen contacten zien en hun eigen groepen
+- Nieuwe permissie voor view all contacts en edit all contacts zodat we ook voor landelijke gebruikers alle contacten inzichtelijk blijven maar we wel op groepen kunnen filteren
+- landelijke gebruikers en administrators zien geen afdelingsgroepen
 - Aparte Drupal-permissies voor het tonen van specifieke tabbladen (Tags, Wijzigingenlogboek, ...)
 - Restrictie op tabblad activiteiten bij een contact. Alleen de activiteiten die 'met' het contact zijn worden getoond. En niet de activiteiten die toegewezen, dan wel toegevoegd door het contact.(Zie ook issue [#470](https://redmine.sp.nl/issues/470))
 - Mogelijk maken van bewerken van custom velden zónder 'edit all contacts' of het contact zelf te kunnen bewerken

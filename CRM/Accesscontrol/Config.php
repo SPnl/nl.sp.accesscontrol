@@ -73,6 +73,9 @@ class CRM_Accesscontrol_Config {
     $permissions['show CiviEvent menu'] = ts('CiviEvent') . ': ' . ts('show CiviEvent menu');
     $permissions['show CiviMember menu'] = ts('CiviMember') . ': ' . ts('show CiviMember menu');
     $permissions['show toegangsgegevens tab'] = ts('CiviCRM') . ': ' . ts('show Toegangsgegevens tab');
+    $permissions['hide local groups'] = ts('CiviCRM') . ': ' . ts('Hide local groups');
+    $permissions['access all contacts (view)'] = ts('CiviCRM') . ': ' . ts('Access all contacts (view)');
+    $permissions['access all contacts (edit)'] = ts('CiviCRM') . ': ' . ts('Access all contacts (edit)');
     $permissions['CiviMail use from default'] = ts('CiviMail') . ': ' . ts('use default from addresses');
     $permissions['CiviMail use from afdeling'] = ts('CiviMail') . ': ' . ts('use afdeling from addresses');
     $permissions['CiviMail use from personal'] = ts('CiviMail') . ': ' . ts('use personal from address');
