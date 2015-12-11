@@ -3,8 +3,15 @@
 class CRM_Accesscontrol_Acl {
 
   public static function aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
-
     if (!$contactID) {
+      return;
+    }
+
+    if (CRM_Core_Permission::check('access all contacts (edit)')) {
+      $where = '1';
+      return;
+    } elseif ($type == CRM_Core_Permission::VIEW && CRM_Core_Permission::check('access all contacts (view)')) {
+      $where = '1';
       return;
     }
 
@@ -21,14 +28,8 @@ class CRM_Accesscontrol_Acl {
       return TRUE;
     }
 
-    if ($type == CRM_Core_Permission::VIEW && CRM_Core_Permission::check('access all contacts (view)')) {
-      $where = '1';
-    } elseif (CRM_Core_Permission::check('access all contacts (edit)')) {
-      $where = '1';
-    } else {
-      // Check passed, hand over to AclGenerator to extend where clause
-      CRM_Geostelsel_AclGenerator::generateWhereClause($type, $tables, $whereTables, $contactID, $where);
-    }
+    // Check passed, hand over to AclGenerator to extend where clause
+    CRM_Geostelsel_AclGenerator::generateWhereClause($type, $tables, $whereTables, $contactID, $where);
   }
 
   public static function aclGroupList($type, $contactID, $tableName, &$allGroups, &$currentGroups) {
