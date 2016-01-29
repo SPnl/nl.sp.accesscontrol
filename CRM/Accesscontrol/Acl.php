@@ -48,9 +48,7 @@ class CRM_Accesscontrol_Acl {
     } else {
       $parent_groups = $group_access->getParentGroupsByContact($contactID);
       foreach ($parent_groups as $gid) {
-        if (isset($allGroups[$gid])) {
-          $currentGroups[] = $gid;
-        }
+        $currentGroups[] = $gid;
       }
     }
   }
