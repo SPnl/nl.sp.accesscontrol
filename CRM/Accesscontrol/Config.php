@@ -69,6 +69,7 @@ class CRM_Accesscontrol_Config {
 
     $permissions['show changelog tab'] = ts('CiviCRM') . ': ' . ts('show Changelog tab');
     $permissions['show tags tab'] = ts('CiviCRM') . ': ' . ts('show Tags tab');
+    $permissions['add to group enabled'] = ts('CiviCRM') . ': ' . ts('Add to group enabled on group tab of contact summary');
     $permissions['show activity tab'] = ts('CiviCRM') . ': ' . ts('show Activity tab');
     $permissions['show CiviEvent menu'] = ts('CiviEvent') . ': ' . ts('show CiviEvent menu');
     $permissions['show CiviMember menu'] = ts('CiviMember') . ': ' . ts('show CiviMember menu');
