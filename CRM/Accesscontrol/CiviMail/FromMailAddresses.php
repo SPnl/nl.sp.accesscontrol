@@ -23,14 +23,12 @@ class CRM_Accesscontrol_CiviMail_FromMailAddresses {
         }
 
         if(CRM_Core_Permission::check('CiviMail use from personal')) {
+            $session = CRM_Core_Session::singleton();
+            $contactID = $session->get('userID');
+
             // add personal email
-
             $config = CRM_Accesscontrol_Config::singleton();
-            if(!$config->isClassInStack('CRM_Contact_Form_Task_Email')) {
-
-                $session = CRM_Core_Session::singleton();
-                $contactID = $session->get('userID');
-
+            if(!$config->isClassInStack('CRM_Contact_Form_Task_Email') && $contactID) {
                 $contactEmails = CRM_Core_BAO_Email::allEmails($contactID);
                 $fromDisplayName = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'display_name');
 
