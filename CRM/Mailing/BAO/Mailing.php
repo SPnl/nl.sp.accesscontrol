@@ -2456,7 +2456,7 @@ LEFT JOIN civicrm_mailing_group g ON g.mailing_id   = m.id
     );
 
 
-    $form->_templates = CRM_Core_BAO_MessageTemplate::getMessageTemplates(FALSE);
+    $form->_templates = CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate::getRestrictedTemplates(FALSE);
     if (!empty($form->_templates)) {
       $form->assign('templates', TRUE);
       $form->add('select', 'template', ts('Use Template'),
@@ -2464,8 +2464,8 @@ LEFT JOIN civicrm_mailing_group g ON g.mailing_id   = m.id
           '' => ts('- select -')) + $form->_templates, FALSE,
         array('onChange' => "selectValue( this.value );")
       );
-      $form->add('checkbox', 'updateTemplate', ts('Update Template'), NULL);
     }
+    $form->add('checkbox', 'updateTemplate', ts('Update Template'), NULL);
 
     $form->add('checkbox', 'saveTemplate', ts('Save As New Template'), NULL, FALSE,
       array('onclick' => "showSaveDetails(this);")
@@ -2533,7 +2533,7 @@ LEFT JOIN civicrm_mailing_group g ON g.mailing_id   = m.id
       )
     );
 
-    $form->_templates = CRM_Core_BAO_MessageTemplate::getMessageTemplates(FALSE);
+    $form->_templates = CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate::getRestrictedTemplates(FALSE);
     if (!empty($form->_templates)) {
       $form->assign('templates', TRUE);
       $form->add('select', 'template', ts('Select Template'),
@@ -2541,9 +2541,8 @@ LEFT JOIN civicrm_mailing_group g ON g.mailing_id   = m.id
           '' => ts('- select -')) + $form->_templates, FALSE,
         array('onChange' => "selectValue( this.value );")
       );
-      $form->add('checkbox', 'updateTemplate', ts('Update Template'), NULL);
     }
-
+    $form->add('checkbox', 'updateTemplate', ts('Update Template'), NULL);
     $form->add('checkbox', 'saveTemplate', ts('Save As New Template'), NULL, FALSE,
       array('onclick' => "showSaveDetails(this);")
     );

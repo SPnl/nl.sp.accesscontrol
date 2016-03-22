@@ -10,13 +10,19 @@ class CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate {
     /**
      * Set message template fields to readonly and disabled
      */
-    $form->getElement('updateTemplate')->setAttribute('readonly', true);
-    $form->getElement('updateTemplate')->setAttribute('disabled', true);
-    $form->getElement('saveTemplate')->setAttribute('readonly', true);
-    $form->getElement('saveTemplate')->setAttribute('disabled', true);
-    $form->getElement('saveTemplate')->setAttribute('onclick', ''); //also remove the onclick handler
-    $form->getElement('saveTemplateName')->setAttribute('readonly', true);
-    $form->getElement('saveTemplateName')->setAttribute('disabled', true);
+    if ($form->getElement('updateTemplate')) {
+      $form->getElement('updateTemplate')->setAttribute('readonly', TRUE);
+      $form->getElement('updateTemplate')->setAttribute('disabled', TRUE);
+    }
+    if ($form->getElement('saveTemplate')) {
+      $form->getElement('saveTemplate')->setAttribute('readonly', TRUE);
+      $form->getElement('saveTemplate')->setAttribute('disabled', TRUE);
+      $form->getElement('saveTemplate')->setAttribute('onclick', ''); //also remove the onclick handler
+    }
+    if ($form->getElement('saveTemplateName')) {
+      $form->getElement('saveTemplateName')->setAttribute('readonly', TRUE);
+      $form->getElement('saveTemplateName')->setAttribute('disabled', TRUE);
+    }
 
 
     /*
@@ -34,7 +40,7 @@ class CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate {
   }
 
   protected static function restrictionInPlace($formName) {
-    if (CRM_Core_Permission::check('access to add or update message templates')) {
+    if (CRM_Core_Permission::check('access to update messagetemplates')) {
       return false;
     }
 
@@ -43,6 +49,26 @@ class CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate {
     }
 
     return true;
+  }
+  
+  public static function getRestrictedTemplates($all=TRUE) {
+    if (CRM_Core_Permission::check('access to update messagetemplates')) {
+      $msgTpls = array();
+
+      $messageTemplates = new CRM_Core_DAO_MessageTemplate();
+      $messageTemplates->is_active = 1;
+
+      if (!$all) {
+        $messageTemplates->workflow_id = 'NULL';
+      }
+      $messageTemplates->find();
+      while ($messageTemplates->fetch()) {
+        $msgTpls[$messageTemplates->id] = $messageTemplates->msg_title;
+      }
+      asort($msgTpls);
+      return $msgTpls;
+    }
+    return array();
   }
 
 }
