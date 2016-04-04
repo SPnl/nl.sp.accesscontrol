@@ -92,6 +92,7 @@ function accesscontrol_civicrm_pageRun(&$page) {
   CRM_Accesscontrol_UI::restrictPages($page);
   CRM_Accesscontrol_UI::addContactPageLink($page);
   CRM_Accesscontrol_GroupContactView::allowAddToGroup($page);
+  CRM_Accesscontrol_SearchCustomGroup::pageRun($page);
 }
 
 /**
@@ -102,6 +103,7 @@ function accesscontrol_civicrm_pageRun(&$page) {
 function accesscontrol_civicrm_buildForm($formName, &$form) {
   CRM_Accesscontrol_UI::restrictForms($formName, $form);
   CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate::restrictForm($formName, $form);
+  CRM_Accesscontrol_SearchCustomGroup::buildForm($formName, $form);
 }
 
 /**

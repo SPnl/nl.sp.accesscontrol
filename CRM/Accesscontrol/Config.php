@@ -85,6 +85,7 @@ class CRM_Accesscontrol_Config {
     $permissions['restrict activities'] = ts('CiviCRM') . ': ' . ts('restrict activities');
     $permissions['access to all files'] = ts('CiviCRM') . ': ' . ts('Access to all files and folders');
     $permissions['access to update messagetemplates'] = ts('CiviCRM') . ': ' . ts('add or update message templates');
+    $permissions['access to custom group search'] = ts('CiviCRM') . ': ' . ts('Access to Inclusive/Exclusive group search');
   }
 
   public function getCallingClass() {

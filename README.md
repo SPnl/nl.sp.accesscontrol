@@ -15,5 +15,6 @@ Deze extensie regelt een aantal zaken om CiviCRM beter af te schermen voor SP-af
 - Overschrijft CRM_Mailing_BAO_Mailing voor een fijnere Access control op Mailings. Standaard zijn ook alle mailings zichtbaar waarvan de groep verwijderd is. (Zie ook issue [#468](https://redmine.sp.nl/issues/468))
 - API Permissie voor aanmaken activiteiten
 - Instellen filter op activiteiten en aanmaken juiste activiteistypes
+- Nieuwe permissie om te bepalen of je toegang hebt to de custom zoekopdracht inclusief/exclusief zoeken
 
 De extensies nl.sp.geostelsel en org.civicoop.postcodenl moeten zijn geïnstalleerd.
