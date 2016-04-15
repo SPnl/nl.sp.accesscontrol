@@ -80,6 +80,7 @@ class CRM_Accesscontrol_Config {
     $permissions['CiviMail use from default'] = ts('CiviMail') . ': ' . ts('use default from addresses');
     $permissions['CiviMail use from afdeling'] = ts('CiviMail') . ': ' . ts('use afdeling from addresses');
     $permissions['CiviMail use from personal'] = ts('CiviMail') . ': ' . ts('use personal from address');
+    $permissions['CiviMail access send to test group'] = ts('CiviCRM') . ': ' . ts('allow sending test mails to groups');
     $permissions['access CiviMail reports'] = ts('CiviReport') . ': ' . ts('access CiviMail reports');
     $permissions['access local reports'] = ts('CiviReport') . ': ' . ts('access local reports');
     $permissions['restrict activities'] = ts('CiviCRM') . ': ' . ts('restrict activities');
