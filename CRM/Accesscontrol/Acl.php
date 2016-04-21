@@ -33,7 +33,7 @@ class CRM_Accesscontrol_Acl {
   }
 
   public static function aclGroupList($type, $contactID, $tableName, &$allGroups, &$currentGroups) {
-    if ($tableName != 'civicrm_saved_search') {
+    if ($tableName != 'civicrm_saved_search' && $tableName != 'civicrm_event' && $tableName != 'civicrm_custom_group') {
       return;
     }
     $group_access = new CRM_Geostelsel_Groep_ParentGroup();

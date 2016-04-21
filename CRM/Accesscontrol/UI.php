@@ -63,9 +63,16 @@ class CRM_Accesscontrol_UI {
   public static function modifyMenu(&$params) {
 
     foreach($params as &$param) {
-
       if($param['attributes']['name'] == 'Events') {
         $param['attributes']['permission'] = 'show CiviEvent menu';
+        foreach($param['child'] as &$child) {
+          if($child['attributes']['name'] == 'Manage Events') {
+            $child['attributes']['permission'] = 'access CiviEvent,show CiviEvent menu';
+          }
+          if($child['attributes']['name'] == 'New Event') {
+            $child['attributes']['permission'] = 'access CiviEvent,show CiviEvent menu';
+          }
+        }
       }
 
       if($param['attributes']['name'] == 'Memberships') {

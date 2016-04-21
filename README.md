@@ -19,3 +19,12 @@ Deze extensie regelt een aantal zaken om CiviCRM beter af te schermen voor SP-af
 - Nieuwe permissie om te bepalen of je toegang hebt to de custom zoekopdracht inclusief/exclusief zoeken
 
 De extensies nl.sp.geostelsel en org.civicoop.postcodenl moeten zijn geïnstalleerd.
+
+Evenementenbeheer voor afdelingsgebruikers
+------------------------------------------
+
+Deze module implementeert ook functionaliteit zodat lokale afdelingsgebruikers
+ook evenementen voor hun afdeling, regio of provincie kunnen toevoegen.
+
+Als een lokale afdelingsgebruiker een evenement aanmaakt dan is het veld Afdeling/Regio/Provincie
+verplicht om in te vullen.

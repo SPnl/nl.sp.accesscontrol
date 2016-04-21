@@ -51,6 +51,7 @@ function accesscontrol_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$
  */
 function accesscontrol_civicrm_aclGroup($type, $contactID, $tableName, &$allGroups, &$currentGroups) {
   CRM_Accesscontrol_Acl::aclGroupList($type, $contactID, $tableName, $allGroups, $currentGroups);
+  CRM_Accesscontrol_Event::aclGroup($type, $contactID, $tableName, $allGroups, $currentGroups);
 }
 
 /**
@@ -60,6 +61,10 @@ function accesscontrol_civicrm_aclGroup($type, $contactID, $tableName, &$allGrou
  */
 function accesscontrol_civicrm_tabs(&$tabs, $contactID) {
   CRM_Accesscontrol_UI::restrictTabs($tabs, $contactID);
+}
+
+function accesscontrol_civicrm_customFieldOptions($customFieldID, &$options, $detailedFormat) {
+  CRM_Accesscontrol_Event::optionValues($customFieldID, $options, $detailedFormat);
 }
 
 /**
@@ -105,6 +110,7 @@ function accesscontrol_civicrm_buildForm($formName, &$form) {
   CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate::restrictForm($formName, $form);
   CRM_Accesscontrol_SearchCustomGroup::buildForm($formName, $form);
   CRM_Accesscontrol_CiviMail_TestMailGroup::buildForm($formName, $form);
+  CRM_Accesscontrol_Event::buildForm($formName, $form);
 }
 
 function accesscontrol_civicrm_alterContent(  &$content, $context, $tplName, &$object ) {
