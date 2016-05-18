@@ -4,6 +4,7 @@ nl.sp.accesscontrol
 Deze extensie regelt een aantal zaken om CiviCRM beter af te schermen voor SP-afdelingsgebruikers:
 
 - Aanpassingen in ACLs contacten en groepen (obv data uit geostelsel) afdelingen kunnen alleen hun eigen contacten zien en hun eigen groepen
+- Gebruikers met de permissie 'Beheer gereserveerde groepen' kunnen standaardgroepen aanmaken voor afdelingen. 
 - Nieuwe permissie voor view all contacts en edit all contacts zodat we ook voor landelijke gebruikers alle contacten inzichtelijk blijven maar we wel op groepen kunnen filteren
 - landelijke gebruikers en administrators zien geen afdelingsgroepen (**Let op** dat betekent dat de permissie *CiviCRM: alle contacten weergeven* en *CiviCRM: alle contacten bewerken* uit moet staan!! In deze module zit een zelfde soort permissie *CiviCRM: Access all contacts (view)* en *CiviCRM: Access all contacts (edit)* die moet dan wel aanstaan, zie ook https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_aclGroup)
 - Aparte Drupal-permissies voor het tonen van specifieke tabbladen (Tags, Wijzigingenlogboek, ...)
