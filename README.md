@@ -20,6 +20,11 @@ Deze extensie regelt een aantal zaken om CiviCRM beter af te schermen voor SP-af
 
 De extensies nl.sp.geostelsel en org.civicoop.postcodenl moeten zijn geïnstalleerd.
 
+Rapporten
+---------
+
+Deze extensie bevat ook een rapport waarin alle afdelingsgebruikers getoond worden en tot welke groep van contacten ze toegang hebben.
+
 Evenementenbeheer voor afdelingsgebruikers
 ------------------------------------------
 
