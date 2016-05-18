@@ -7,14 +7,18 @@
 class CRM_Accesscontrol_StandardGroup_Groups {
 
   public static function getStandardGroups() {
-    $config = CRM_Accesscontrol_StandardGroup_Config::singleton();
-    $sql = "SELECT `entity_id` as `group_id` FROM `".$config->getCustomGroup('table_name')."` WHERE `".$config->getStandardAfdelingsGroep('column_name')."` = '1'";
-    $dao = CRM_Core_DAO::executeQuery($sql);
-    $return = array();
-    while ($dao->fetch()) {
-      $return[] = $dao->group_id;
+    try {
+      $config = CRM_Accesscontrol_StandardGroup_Config::singleton();
+      $sql = "SELECT `entity_id` as `group_id` FROM `" . $config->getCustomGroup('table_name') . "` WHERE `" . $config->getStandardAfdelingsGroep('column_name') . "` = '1'";
+      $dao = CRM_Core_DAO::executeQuery($sql);
+      $return = array();
+      while ($dao->fetch()) {
+        $return[] = $dao->group_id;
+      }
+      return $return;
+    } catch (Exception $e) {
+      return array();
     }
-    return $return;
   }
   
   public static function pre($op, $objectName, $id, &$params) {
