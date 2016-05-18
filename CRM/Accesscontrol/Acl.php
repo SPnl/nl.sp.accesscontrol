@@ -51,6 +51,11 @@ class CRM_Accesscontrol_Acl {
         $currentGroups[] = $gid;
       }
     }
+
+    // standaard groepen die afdelingen altijd zien.
+    foreach(CRM_Accesscontrol_StandardGroup_Groups::getStandardGroups() as $gid) {
+      $currentGroups[] = $gid;
+    }
   }
 
 }

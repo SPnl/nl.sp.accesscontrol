@@ -35,6 +35,11 @@ function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &
   }
 }
 
+function accesscontrol_civicrm_pre( $op, $objectName, $id, &$params ) {
+  // Set group to reserved when Standaard Afdelingsgroep is set to 'Yes'
+  CRM_Accesscontrol_StandardGroup_Groups::pre($op, $objectName, $id, $params);
+}
+
 /**
  * Implementation of hook_civicrm_aclWhereClause
  * Voegt where-clause / restricties toe aan alle queries van deze gebruiker.
