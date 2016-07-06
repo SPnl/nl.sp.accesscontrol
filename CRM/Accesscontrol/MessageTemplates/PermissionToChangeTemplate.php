@@ -51,12 +51,13 @@ class CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate {
     return true;
   }
   
-  public static function getRestrictedTemplates($all=TRUE) {
+  public static function getRestrictedTemplates($all=TRUE, $isSMS=FALSE) {
     if (CRM_Core_Permission::check('access to update messagetemplates')) {
       $msgTpls = array();
 
       $messageTemplates = new CRM_Core_DAO_MessageTemplate();
       $messageTemplates->is_active = 1;
+      $messageTemplates->is_sms = $isSMS;
 
       if (!$all) {
         $messageTemplates->workflow_id = 'NULL';
@@ -69,6 +70,8 @@ class CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate {
       return $msgTpls;
     }
     return array();
+
+
   }
 
 }
