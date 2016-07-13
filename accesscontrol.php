@@ -8,6 +8,13 @@
 
 require_once 'accesscontrol.civix.php';
 
+function accesscontrol_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  //&apiWrappers is an array of wrappers, you can add your(s) with the hook.
+  // You can use the apiRequest to decide if you want to add the wrapper (eg. only wrap api.Contact.create)
+  if ($apiRequest['entity'] == 'MessageTemplate' && in_array($apiRequest['action'], CRM_Accesscontrol_MessageTemplates_ApiWrapper::validActions())) {
+    $wrappers[] = new CRM_Accesscontrol_MessageTemplates_ApiWrapper();
+  }
+}
 
 
 function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
