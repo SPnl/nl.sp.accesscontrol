@@ -2,6 +2,35 @@
 
 class CRM_Accesscontrol_Acl {
 
+  /**
+   * Replace the 'View all contacts' and 'Edit all contacts' permissions
+   *
+   * @param $permissions
+   */
+  public static function alterApiPermissions(&$permissions) {
+    foreach($permissions as $entity =>$entityPermissions) {
+      foreach($entityPermissions as $action => $actionPermissions) {
+        foreach ($actionPermissions as $index => $permission) {
+          if (is_array($permission)) {
+            foreach($permission as $subindex => $subpermission) {
+              if ($subpermission == 'view all contacts') {
+                $permissions[$entity][$action][$index][$subindex] = 'access all contacts (view)';
+              } elseif ($subpermission == 'edit all contacts') {
+                $permissions[$entity][$action][$index][$subindex] = 'access all contacts (edit)';
+              }
+            }
+          } else {
+            if ($permission == 'view all contacts') {
+              $permissions[$entity][$action][$index] = 'access all contacts (view)';
+            } elseif ($permission == 'edit all contacts') {
+              $permissions[$entity][$action][$index] = 'access all contacts (edit)';
+            }
+          }
+        }
+      }
+    }
+  }
+
   public static function aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
     if (!$contactID) {
       return;
