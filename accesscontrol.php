@@ -18,6 +18,7 @@ function accesscontrol_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 
 
 function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  CRM_Accesscontrol_Acl::alterApiPermissions($permissions);
   if ($entity == 'activity' and $action == 'create') {
     //check contacts in activity create
     $allContactsAllowed = true;

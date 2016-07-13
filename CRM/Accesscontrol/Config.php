@@ -66,7 +66,6 @@ class CRM_Accesscontrol_Config {
   }
 
   public function getExtraPermissions(&$permissions) {
-
     $permissions['show changelog tab'] = ts('CiviCRM') . ': ' . ts('show Changelog tab');
     $permissions['show tags tab'] = ts('CiviCRM') . ': ' . ts('show Tags tab');
     $permissions['add to group enabled'] = ts('CiviCRM') . ': ' . ts('Add to group enabled on group tab of contact summary');
@@ -75,8 +74,8 @@ class CRM_Accesscontrol_Config {
     $permissions['show CiviMember menu'] = ts('CiviMember') . ': ' . ts('show CiviMember menu');
     $permissions['show toegangsgegevens tab'] = ts('CiviCRM') . ': ' . ts('show Toegangsgegevens tab');
     $permissions['hide local groups'] = ts('CiviCRM') . ': ' . ts('Hide local groups');
-    $permissions['access all contacts (view)'] = ts('CiviCRM') . ': ' . ts('Access all contacts (view)');
-    $permissions['access all contacts (edit)'] = ts('CiviCRM') . ': ' . ts('Access all contacts (edit)');
+    $permissions['access all contacts (view)'] = array(ts('CiviCRM') . ': ' . ts('SP - View all contacts'), ts('This is a SP specific permission to override the core view all contacts permission. View ANY CONTACT in the CiviCRM database, export contact info and perform activities such as Send Email, Phone Call, etc.'));
+    $permissions['access all contacts (edit)'] = array(ts('CiviCRM') . ': ' . ts('SP - Edit all contacts'), ts('This is a SP specific permission to override the core view all contacts permission. View, Edit and Delete ANY CONTACT in the CiviCRM database; Create and edit relationships, tags and other info about the contacts'));
     $permissions['CiviMail use from default'] = ts('CiviMail') . ': ' . ts('use default from addresses');
     $permissions['CiviMail use from afdeling'] = ts('CiviMail') . ': ' . ts('use afdeling from addresses');
     $permissions['CiviMail use from personal'] = ts('CiviMail') . ': ' . ts('use personal from address');
