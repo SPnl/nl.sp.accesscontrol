@@ -5,38 +5,19 @@
  */
 
 class CRM_Accesscontrol_CiviMail_TestMailGroup {
-
   /**
    * When the user has no access to send test mail to group freeze the element
    * in the form.
-   *
-   * @param $formName
-   * @param $form
    */
-  public static function buildForm($formName, &$form) {
-    if ($formName == 'CRM_Mailing_Form_Test' && !CRM_Core_Permission::check('CiviMail access send to test group')) {
-      if ($form->elementExists('test_group')) {
-        $element = $form->getElement('test_group');
-        $element->freeze();
-        $element->setLabel('');
+  public static function hideBlock($page) {
+    // check if it's the angular mailing page
+    // NOTE: there's no way to check it's the mailing page???
+    $pageName = $page->getVar('_name');
+    if ($pageName == 'Civi\Angular\Page\Main') {
+      // hide the access to the test group, if user is not allowed to do this
+      if (!CRM_Core_Permission::check('CiviMail access send to test group')) {
+        CRM_Core_Resources::singleton()->addScriptFile('nl.sp.accesscontrol', 'js/customizeMailingForm.js', 800);
       }
     }
   }
-
-  /**
-   * When the user has no access to send test mail to group remove the fields from
-   * the UI. This done by adding jQuery which removes the elements from the DOM.
-   *
-   * @param $content
-   * @param $context
-   * @param $tplName
-   * @param $object
-   */
-  public static function alterContent(  &$content, $context, $tplName, &$object ) {
-    if ($object instanceof CRM_Mailing_Form_Test && !CRM_Core_Permission::check('CiviMail access send to test group')) {
-      $template = CRM_Core_Smarty::singleton();
-      $content .= $template->fetch('CRM/Mailing/Form/Test/remove_test_group_js.tpl');
-    }
-  }
-
 }
