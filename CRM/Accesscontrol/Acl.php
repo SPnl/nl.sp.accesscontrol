@@ -29,6 +29,13 @@ class CRM_Accesscontrol_Acl {
         }
       }
     }
+
+    /**
+     * Allow users to always get an e-mail address. But only for the contacts
+     * they are allowed to see. 
+     */
+    $permissions['email']['getvalue'] = array('access CiviCRM');
+    $permissions['email']['get'] = array('access CiviCRM');
   }
 
   public static function aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
