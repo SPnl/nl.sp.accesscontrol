@@ -14,8 +14,11 @@ function accesscontrol_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   if ($apiRequest['entity'] == 'MessageTemplate' && in_array($apiRequest['action'], CRM_Accesscontrol_MessageTemplates_ApiWrapper::validActions())) {
     $wrappers[] = new CRM_Accesscontrol_MessageTemplates_ApiWrapper();
   }
+  
+  if ($apiRequest['entity'] == 'OptionValue' && $apiRequest['action'] == 'get') {
+    $wrappers[] = new CRM_Accesscontrol_CiviMail_ApiWrapper();
+  }
 }
-
 
 function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   CRM_Accesscontrol_Acl::alterApiPermissions($permissions);
@@ -78,17 +81,6 @@ function accesscontrol_civicrm_tabs(&$tabs, $contactID) {
 
 function accesscontrol_civicrm_customFieldOptions($customFieldID, &$options, $detailedFormat) {
   CRM_Accesscontrol_Event::optionValues($customFieldID, $options, $detailedFormat);
-}
-
-/**
- * Implementation of hook_civicrm_optionValues
- * Verwijdert voor afdelingsgebruikers de standaard-afzendadressen uit CiviMail.
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_optionValues
- */
-function accesscontrol_civicrm_optionValues(&$options, $name) {
-  if ($name == 'from_email_address') {
-    CRM_Accesscontrol_CiviMail_FromMailAddresses::optionValues($options, $name);
-  }
 }
 
 /**

@@ -1,7 +1,6 @@
 <?php
 
 class CRM_Accesscontrol_CiviMail_FromMailAddresses {
-
     /**
      * Change the option list with from values from the afdelingen, regio's en provincies
      * @param $options
