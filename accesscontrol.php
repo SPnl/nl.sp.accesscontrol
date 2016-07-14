@@ -79,6 +79,17 @@ function accesscontrol_civicrm_tabs(&$tabs, $contactID) {
   CRM_Accesscontrol_UI::restrictTabs($tabs, $contactID);
 }
 
+/**
+ * Implementation of hook_civicrm_optionValues
+ * Verwijdert voor afdelingsgebruikers de standaard-afzendadressen uit CiviMail.
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_optionValues
+ */
+function accesscontrol_civicrm_optionValues(&$options, $name) {
+  if ($name == 'from_email_address') {
+    CRM_Accesscontrol_CiviMail_FromMailAddresses::optionValues($options, $name);
+  }
+}
+
 function accesscontrol_civicrm_customFieldOptions($customFieldID, &$options, $detailedFormat) {
   CRM_Accesscontrol_Event::optionValues($customFieldID, $options, $detailedFormat);
 }
