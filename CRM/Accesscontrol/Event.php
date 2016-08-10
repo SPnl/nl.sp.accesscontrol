@@ -31,8 +31,9 @@ class CRM_Accesscontrol_Event {
       return;
     }
 
-    $afdeling_custom_group_id = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'event_afdeling', 'extends' => 'Event', 'return' => 'id'));
-    $contact_id_field_id = civicrm_api3('CustomField', 'getvalue', array('name' => 'contact_id', 'custom_group_id' => $afdeling_custom_group_id, 'return' => 'id'));
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $afdeling_custom_group_id = $cfsp->getGroupId('event_afdeling');
+    $contact_id_field_id = $cfsp->getFieldId('event_afdeling', 'contact_id');
     $groupTree = $form->getVar('_groupTree');
     if (isset($groupTree[$afdeling_custom_group_id]) && isset($groupTree[$afdeling_custom_group_id]['fields'][$contact_id_field_id])) {
       $elementName = $groupTree[$afdeling_custom_group_id]['fields'][$contact_id_field_id]['element_name'];
@@ -45,45 +46,39 @@ class CRM_Accesscontrol_Event {
 
   /**
    * Load a set of Afdelingen/Regio's/Provincies for the field afdeling on Events.
-   *
    * @param $customFieldID
    * @param $options
    * @param $detailedFormat
    * @throws \CiviCRM_API3_Exception
    */
   public static function optionValues($customFieldID, &$options, $detailedFormat) {
-    $afdeling_custom_group_id = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'event_afdeling', 'extends' => 'Event', 'return' => 'id'));
-    $contact_id_field_id = civicrm_api3('CustomField', 'getvalue', array('name' => 'contact_id', 'custom_group_id' => $afdeling_custom_group_id, 'return' => 'id'));
+
+    // Changed CustomField call + tried to refactor contact call into one call for performance reasons
+    // but apparently 4.6 doesn't properly support the ['IN' => []] syntax yet...
+
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $contact_id_field_id = $cfsp->getFieldId('event_afdeling', 'contact_id');
     if ($customFieldID != $contact_id_field_id) {
       return;
     }
 
-    $newOptions = array();
-    $provincies = civicrm_api3('Contact', 'get', array('contact_sub_type' => 'SP_Provincie', 'check_permissions' => 1));
-    foreach($provincies['values'] as $cid => $contact) {
-      $newOptions[$cid] = $contact['display_name'];
-    }
-
-    $regios = civicrm_api3('Contact', 'get', array('contact_sub_type' => 'SP_Regio', 'check_permissions' => 1));
-    foreach($regios['values'] as $cid => $contact) {
-      $newOptions[$cid] = $contact['display_name'];
-    }
-
-    $afdelingen = civicrm_api3('Contact', 'get', array('contact_sub_type' => 'SP_Afdeling', 'check_permissions' => 1));
-    foreach($afdelingen['values'] as $cid => $contact) {
-      $newOptions[$cid] = $contact['display_name'];
-    }
-
-
-    foreach($newOptions as $id => $label) {
-      if ( $detailedFormat ) {
-        $options[$id] = array(
-          'id' => $id,
-          'value' => $id,
-          'label' => $label,
-        );
-      } else {
-        $options[$id] = $label;
+    foreach (['SP_Afdeling', 'SP_Regio', 'SP_Provincie'] as $sporg) {
+      $res = civicrm_api3('Contact', 'get', [
+        'contact_sub_type'  => $sporg,
+        'return'            => 'id,display_name',
+        'option.limit'      => '1000',
+        'check_permissions' => 1,
+      ]);
+      foreach ($res['values'] as $cid => $contact) {
+        if ($detailedFormat) {
+          $options[$cid] = [
+            'id'    => $cid,
+            'value' => $cid,
+            'label' => $contact['display_name'],
+          ];
+        } else {
+          $options[$cid] = $contact['display_name'];
+        }
       }
     }
   }
@@ -110,7 +105,7 @@ class CRM_Accesscontrol_Event {
       return;
     }
 
-    $afdeling_custom_group_id = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'event_afdeling', 'extends' => 'Event', 'return' => 'id'));
+    $afdeling_custom_group_id = CRM_Spgeneric_CustomField::singleton()->getGroupId('event_afdeling');
     if (isset($allGroups[$afdeling_custom_group_id]) && !in_array($afdeling_custom_group_id, $currentGroups)) {
       $currentGroups[] = $afdeling_custom_group_id;
     }
@@ -145,8 +140,7 @@ class CRM_Accesscontrol_Event {
     }
     $currentGroups = $createdEvents;
 
-    $afdeling_custom_group_id = civicrm_api3('CustomGroup', 'getvalue', array('name' => 'event_afdeling', 'extends' => 'Event', 'return' => 'id'));
-    $contact_id_field_id = civicrm_api3('CustomField', 'getvalue', array('name' => 'contact_id', 'custom_group_id' => $afdeling_custom_group_id, 'return' => 'id'));
+    $contact_id_field_id = CRM_Spgeneric_CustomField::singleton()->getFieldId('event_afdeling', 'contact_id');
     $contacts = array();
     self::optionValues($contact_id_field_id, $contacts, false);
     $contactIDs = array_keys($contacts);

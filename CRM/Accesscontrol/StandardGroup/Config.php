@@ -13,8 +13,9 @@ class CRM_Accesscontrol_StandardGroup_Config {
   private $standaard_afdelingsgroep;
 
   private function __construct() {
-    $this->custom_group = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'group_settings'));
-    $this->standaard_afdelingsgroep = civicrm_api3('CustomField', 'getsingle', array('name' => 'standaard_afdelingsgroep', 'custom_group_id' => $this->custom_group['id']));
+    $cfsp = CRM_Spgeneric_CustomField::singleton();
+    $this->custom_group = $cfsp->getGroupByName('group_settings');
+    $this->standaard_afdelingsgroep = $cfsp->getField('group_settings', 'standaard_afdelingsgroep');
   }
 
   /**
