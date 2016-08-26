@@ -70,7 +70,7 @@ class CRM_Accesscontrol_CiviMail_FromMailAddresses {
         }
       }
 
-      $i = max(array_keys($values));
+      $i = count($values) > 0 ? max(array_keys($values)) : 0;
       foreach($extra_addresses as $id => $email) {
         $i++;
         $values[$i] = array(
