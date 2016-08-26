@@ -19,32 +19,27 @@ class CRM_Accesscontrol_CiviMail_APIWrapper implements API_Wrapper {
    *   modified $result
    */
   public function toApiOutput($apiRequest, $result) {
-    // check if the option group "from_email_address" (id = 31) is requested
-    if (array_key_exists('option_group_id', $apiRequest['params']) && $apiRequest['params']['option_group_id'] == 31) {
-      // get the allowed e-mail addresses
-      $options = array();
-      CRM_Accesscontrol_CiviMail_FromMailAddresses::optionValues($options, 'from_email_address');
-      
-	  // store them in the results array
-	  $fromAddresses = array();
-	  $i = 0;
-	  foreach ($options as $k => $v) {
-	    $i++;
-	    $addr = array(
-	      'id' => $i,
-	      'is_active' => 1,
-	      'label' => $v,
-	      'name' => $v,
-	    );
-	    
-	    $fromAddresses[] = $addr;
-	  }
-	  
-	  $result['values'] = $fromAddresses;
-	  $result['count'] = $i;
+    if (array_key_exists('option_group_id', $apiRequest['params']) && ($from_email_address_id=$this->validateOptionGroupIdForFromEmailAddress($apiRequest['params']['option_group_id']))) {
+      CRM_Accesscontrol_CiviMail_FromMailAddresses::checkApiOutput($result['values']);
+      $result['count'] = count($result['values']);
     }
     
     return $result;
+  }
+
+  protected function validateOptionGroupIdForFromEmailAddress($option_group_id) {
+    try {
+      $from_email_address_id = civicrm_api3('OptionGroup', 'getvalue', array(
+        'name' => 'from_email_address',
+        'return' => 'id'
+      ));
+      if ($from_email_address_id == $option_group_id) {
+        return $from_email_address_id;
+      }
+    } catch (Exception $e) {
+      //do nothing
+    }
+    return false;
   }
 
 }

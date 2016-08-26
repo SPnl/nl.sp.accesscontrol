@@ -30,14 +30,54 @@ class CRM_Accesscontrol_CiviMail_FromMailAddresses {
             if(!$config->isClassInStack('CRM_Contact_Form_Task_Email') && $contactID) {
                 $contactEmails = CRM_Core_BAO_Email::allEmails($contactID);
                 $fromDisplayName = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'display_name');
-
                 if (count($contactEmails) > 0) {
                     foreach ($contactEmails as $email) {
-                        $options['contact_id_' . $contactID] = '"' . $fromDisplayName . '" <' . $email['email'] . '>';
+                      $options['contact_id_'.$contactID] = '"' . $fromDisplayName . '" <' . $email['email'] . '>';
                     }
                 }
             }
         }
+    }
+
+    public static function checkApiOutput(&$values) {
+      if (!CRM_Core_Permission::check('CiviMail use from default')) {
+        // unset default options
+        $values = [];
+      }
+
+      $extra_addresses = array();
+      if(CRM_Core_Permission::check('CiviMail use from afdeling')) {
+        // add afdelingen/regio's/provincies
+        self::getFromContacts($extra_addresses);
+      }
+
+      if(CRM_Core_Permission::check('CiviMail use from personal')) {
+        $session = CRM_Core_Session::singleton();
+        $contactID = $session->get('userID');
+
+        // add personal email
+        $config = CRM_Accesscontrol_Config::singleton();
+        if(!$config->isClassInStack('CRM_Contact_Form_Task_Email') && $contactID) {
+          $contactEmails = CRM_Core_BAO_Email::allEmails($contactID);
+          $fromDisplayName = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'display_name');
+          if (count($contactEmails) > 0) {
+            $i = 0;
+            foreach ($contactEmails as $email) {
+              //$options['contact_id_' . $contactID] = $addr;
+              $extra_addresses [] = '"' . $fromDisplayName . '" <' . $email['email'] . '>';
+            }
+          }
+        }
+      }
+
+      foreach($extra_addresses as $id => $email) {
+        $values[$id] = array(
+          'id' => $id,
+          'is_active' => 1,
+          'label' => $email,
+          'name' => $email,
+        );
+      }
     }
 
     protected static function getFromContacts(&$options) {
