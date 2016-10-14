@@ -2445,11 +2445,14 @@ SELECT    DISTINCT( m.id ) as id
   FROM    civicrm_mailing m
 LEFT JOIN civicrm_mailing_group g ON g.mailing_id   = m.id
  WHERE ( ( g.entity_table like 'civicrm_group%' AND g.entity_id IN ( $groupIDs ) )
+    OR   ( g.entity_table IS NULL AND g.entity_id IS NULL AND m.created_id = %1)
 )";
+      $session = CRM_Core_Session::singleton();
+      $mailingQueryParams[1] = array($session->get('userID'), 'Positive');
+      $dao = CRM_Core_DAO::executeQuery($query, $mailingQueryParams);
       /**
        * EINDE ISSUE #468
        */
-      $dao = CRM_Core_DAO::executeQuery($query);
 
       $mailingIDs = array();
       while ($dao->fetch()) {
