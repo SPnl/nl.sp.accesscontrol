@@ -22,9 +22,11 @@ class CRM_Accesscontrol_CiviMail_ApiWrapperMail implements API_Wrapper {
     $values = array();
     $allowedMailingIds = CRM_Mailing_BAO_Mailing::mailingACLIDs();
     //var_dump($allowedMailingIds);
-    foreach($result['values'] as $mid => $mailing) {
-      if (in_array($mailing['id'], $allowedMailingIds)) {
-        $values[$mid] = $mailing;
+    if ($allowedMailingIds) {
+      foreach ($result['values'] as $mid => $mailing) {
+        if (in_array($mailing['id'], $allowedMailingIds)) {
+          $values[$mid] = $mailing;
+        }
       }
     }
     $result['values'] = $values;
