@@ -84,8 +84,8 @@ class CRM_Accesscontrol_CiviMail_FromMailAddresses {
 
     protected static function getFromContacts(&$options) {
         $sep = CRM_Core_DAO::VALUE_SEPARATOR;
-        $tables['civicrm_contact'] = 'contact_a';
-        $whereTables['civicrm_contact'] = 'contact_a';
+        $tables = array();
+        $whereTables = array();
         $aclWhere = CRM_ACL_API::whereClause(CRM_ACL_API::VIEW, $tables, $whereTables);
         $from = CRM_Contact_BAO_Query::fromClause($whereTables);
         $sql = "SELECT contact_a.id as contact_id, contact_a.display_name, e.email
