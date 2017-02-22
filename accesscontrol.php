@@ -17,6 +17,8 @@ function accesscontrol_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   
   if ($apiRequest['entity'] == 'OptionValue' && $apiRequest['action'] == 'get') {
     $wrappers[] = new CRM_Accesscontrol_CiviMail_ApiWrapper();
+  } elseif ($apiRequest['entity'] =='Mailing' && $apiRequest['action'] == 'get') {
+    $wrappers[] = new CRM_Accesscontrol_CiviMail_ApiWrapperMail();
   }
 }
 

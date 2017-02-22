@@ -84,11 +84,13 @@ class CRM_Accesscontrol_CiviMail_FromMailAddresses {
 
     protected static function getFromContacts(&$options) {
         $sep = CRM_Core_DAO::VALUE_SEPARATOR;
-        list($aclFrom, $aclWhere) = CRM_Contact_BAO_Contact_Permission::cacheClause('contact_a');
+        $tables = array();
+        $whereTables = array();
+        $aclWhere = CRM_ACL_API::whereClause(CRM_ACL_API::VIEW, $tables, $whereTables);
+        $from = CRM_Contact_BAO_Query::fromClause($whereTables);
         $sql = "SELECT contact_a.id as contact_id, contact_a.display_name, e.email
-            FROM civicrm_contact contact_a
+            {$from}
             INNER JOIN civicrm_email e on contact_a.id = e.contact_id AND e.is_primary = 1
-            {$aclFrom}
             WHERE (
               contact_a.contact_sub_type LIKE '%{$sep}SP_Afdeling{$sep}%'
               OR contact_a.contact_sub_type LIKE '%{$sep}SP_Regio{$sep}%'
