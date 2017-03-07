@@ -19,6 +19,11 @@ function accesscontrol_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     $wrappers[] = new CRM_Accesscontrol_CiviMail_ApiWrapper();
   } elseif ($apiRequest['entity'] =='Mailing' && $apiRequest['action'] == 'get') {
     $wrappers[] = new CRM_Accesscontrol_CiviMail_ApiWrapperMail();
+  } elseif ($apiRequest['entity'] == 'GroupContact' && $apiRequest['action'] == 'getoptions') {
+    // Use this api wrapper to limit the options in the group drop downs. E.g. on
+    // the basic search screen a local user can only chose one of the local groups.
+    // An administrator can see all groups except the local groups (if the permission 'hide local groups' is checked).
+    $wrappers[] = new CRM_Accesscontrol_GroupApiWrapper();
   }
 }
 
