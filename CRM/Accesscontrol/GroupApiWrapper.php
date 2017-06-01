@@ -19,7 +19,10 @@ class CRM_Accesscontrol_GroupApiWrapper implements API_Wrapper {
    *   modified $result
    */
   public function toApiOutput($apiRequest, $result) {
-    if ($apiRequest['entity'] == 'GroupContact' && $apiRequest['action'] == 'getoptions') {
+    $session = CRM_Core_Session::singleton();
+    $contactID = $session->get('userID');
+
+    if ($apiRequest['entity'] == 'GroupContact' && $apiRequest['action'] == 'getoptions' && !empty($contactID)) {
       $validFieldName = array('group', 'group_id');
       if (!isset($apiRequest['params']) || !isset($apiRequest['params']['field']) || !in_array($apiRequest['params']['field'], $validFieldName)) {
         return $result;
@@ -29,9 +32,6 @@ class CRM_Accesscontrol_GroupApiWrapper implements API_Wrapper {
       if (isset($apiRequest['params']['sequential']) && $apiRequest['params']['sequential']) {
         $sequential = true;
       }
-
-      $session = CRM_Core_Session::singleton();
-      $contactID = $session->get('userID');
 
       $accessToAllGroups = false;
       if (CRM_Core_Permission::check('access all contacts (view)') || CRM_Core_Permission::check('view all contacts')) {
