@@ -117,6 +117,7 @@ function accesscontrol_civicrm_permission(&$permissions) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_pageRun
  */
 function accesscontrol_civicrm_pageRun(&$page) {
+  CRM_Accesscontrol_UI::allowEdittingOfNotes($page);
   CRM_Accesscontrol_UI::restrictPages($page);
   CRM_Accesscontrol_UI::addContactPageLink($page);
   CRM_Accesscontrol_GroupContactView::allowAddToGroup($page);

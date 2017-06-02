@@ -35,6 +35,38 @@ class CRM_Accesscontrol_UI {
     }
   }
 
+  public static function allowEdittingOfNotes(&$page) {
+    if ($page instanceof CRM_Contact_Page_View_Note) {
+      if (CRM_Contact_BAO_Contact_Permission::allow($page->getVar('_contactId'), CRM_Core_Permission::VIEW)) {
+        $page->assign('permission', 'edit');
+        $page->_permission = CRM_Core_Permission::EDIT;
+
+        //CRM-4418, handling edit and delete separately.
+        $permissions = array(CRM_Core_Permission::EDIT, CRM_Core_Permission::DELETE);
+        $mask = CRM_Core_Action::mask($permissions);
+        $links = CRM_Contact_Page_View_Note::links();
+        $action = array_sum(array_keys($links)) & $mask;
+
+        $notes = $page->get_template_vars('notes');
+        foreach ($notes as $note_id => $note) {
+          $notes[$note_id]['action'] = CRM_Core_Action::formLink($links,
+            $action,
+            array(
+              'id' => $note_id,
+              'cid' => $page->getVar('_contactId'),
+            ),
+            ts('more'),
+            FALSE,
+            'note.selector.row',
+            'Note',
+            $note_id
+          );
+        }
+        $page->assign('notes', $notes);
+      }
+    }
+  }
+
   public static function restrictPages(&$page) {
 
     $pagePermissions = CRM_Accesscontrol_Config::singleton()->getPermissionsForPages();
