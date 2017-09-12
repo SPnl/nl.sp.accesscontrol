@@ -1,0 +1,13 @@
+{
+    "name": "spnl/nl.sp.accesscontrol",
+    "description": "Extra afscherming voor afdelingsgebruikers CiviCRM",
+    "type": "civicrm-module",
+    "license": "AGPL-3.0",
+    "authors": [
+        {
+            "name": "Jaap Jansma  Kevin Levie",
+            "email": "helpdesk@civicoop.org"
+        }
+    ],
+    "require": {}
+}
