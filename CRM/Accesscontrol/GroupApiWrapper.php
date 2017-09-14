@@ -21,6 +21,8 @@ class CRM_Accesscontrol_GroupApiWrapper implements API_Wrapper {
   public function toApiOutput($apiRequest, $result) {
     $session = CRM_Core_Session::singleton();
     $contactID = $session->get('userID');
+    $currentGroups = array();
+    $groupsToHide = array();
 
     if ($apiRequest['entity'] == 'GroupContact' && $apiRequest['action'] == 'getoptions' && !empty($contactID)) {
       $validFieldName = array('group', 'group_id');
