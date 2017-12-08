@@ -27,6 +27,10 @@ function accesscontrol_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   }
 }
 
+function accesscontrol_civicrm_selectWhereClause($entity, &$clauses) {
+	CRM_Accesscontrol_Acl::selectWhereClause($entity, $clauses);
+}
+
 function accesscontrol_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   CRM_Accesscontrol_Acl::alterApiPermissions($permissions);
   if ($entity == 'activity' and $action == 'create') {
