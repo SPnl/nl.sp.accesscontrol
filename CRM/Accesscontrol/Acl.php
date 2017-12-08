@@ -43,16 +43,14 @@ class CRM_Accesscontrol_Acl {
 	public static function selectWhereClause($entity, &$clauses) {
 		// We reset the api persmission for the email so that anyone with access civicrm can use this e-mail api.
 		// So now we have to include an ACL clause when a query runs on the email table.
-		if ($entity == 'Email') {
-			if (isset($clauses['contact_id'])) {
-				if (CRM_Core_Permission::check('access all contacts (edit)') || CRM_Core_Permission::check('access all contacts (view)') || CRM_Core_Permission::check('view all contacts') || CRM_Core_Permission::check('edit all contacts')) {
-	      	return;
-				}
-				$aclContactCache = \Civi::service('acl_contact_cache');
-	    	$aclWhere = $aclContactCache->getAclWhereClause(CRM_Core_Permission::VIEW, $tableAlias);
-				$aclWhere = " AND contact_id IN (SELECT contact_id FROM `civicrm_acl_contacts` WHERE ".$aclWhere.")";			
-				$clauses['contact_id'] = $aclWhere;
+		if ($entity == 'Email' || $entity == 'Membership') {
+			if (CRM_Core_Permission::check('access all contacts (edit)') || CRM_Core_Permission::check('access all contacts (view)') || CRM_Core_Permission::check('view all contacts') || CRM_Core_Permission::check('edit all contacts')) {
+      	return;
 			}
+			$aclContactCache = \Civi::service('acl_contact_cache');
+    	$aclWhere = $aclContactCache->getAclWhereClause(CRM_Core_Permission::VIEW, $tableAlias);
+			$aclWhere = " AND contact_id IN (SELECT contact_id FROM `civicrm_acl_contacts` WHERE ".$aclWhere.")";			
+			$clauses['contact_id'] = $aclWhere;
 		}
 	}
 
