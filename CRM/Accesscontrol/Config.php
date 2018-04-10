@@ -31,6 +31,7 @@ class CRM_Accesscontrol_Config {
     'CRM_Contact_Form_Relationship'   => 'edit all contacts',
     'CRM_Activity_Form_Search'        => 'show activity tab',
     'CRM_Report_Form_Mailing_Summary' => 'access CiviMail reports',
+    'CRM_Contribute_Form_ContributionView' => 'access CiviContribute',
   );
 
 
