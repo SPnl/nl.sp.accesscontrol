@@ -122,6 +122,7 @@ function accesscontrol_civicrm_permission(&$permissions) {
  */
 function accesscontrol_civicrm_pageRun(&$page) {
   CRM_Accesscontrol_UI::allowEdittingOfNotes($page);
+	CRM_Accesscontrol_UI::allowViewingOfMailing($page);
   CRM_Accesscontrol_UI::restrictPages($page);
   CRM_Accesscontrol_UI::addContactPageLink($page);
   CRM_Accesscontrol_GroupContactView::allowAddToGroup($page);

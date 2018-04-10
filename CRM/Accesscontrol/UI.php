@@ -35,6 +35,36 @@ class CRM_Accesscontrol_UI {
     }
   }
 
+	/**
+	 * Check whether this page is a mailing page and whether the user 
+	 * has access to view the specific mailing.
+	 * If the user is not allowed to view the mailing deny the access to the page completly.
+	 */
+	public static function allowViewingOfMailing(&$page) {
+		$config = CRM_Accesscontrol_Config::singleton();
+		$mailingPages = $config->getMailingPages();
+		$pageName = get_class($page);
+		
+		// Check whether this page is a mailing page.
+		// If it isn't then return from this function
+		if (!isset($mailingPages[$pageName])) {
+			return;
+		}
+		
+		$midParameter = $mailingPages[$pageName]['mid'];
+		$mid = CRM_Utils_Request::retrieve('mid', 'Positive');
+		$accessToMailing = CRM_Mailing_BAO_Mailing::mailingACLIDs();
+		if ($accessToMailing === true || !is_array($accessToMailing)) {
+			// User is allowed to see all bulk mails
+			// return
+			return;
+		}
+		
+		if (!in_array($mid, $accessToMailing)) {
+			self::returnAccessDenied($pageName);
+		}
+	}
+
   public static function allowEdittingOfNotes(&$page) {
     if ($page instanceof CRM_Contact_Page_View_Note) {
       if (CRM_Contact_BAO_Contact_Permission::allow($page->getVar('_contactId'), CRM_Core_Permission::VIEW)) {

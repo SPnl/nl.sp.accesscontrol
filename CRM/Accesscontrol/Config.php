@@ -33,6 +33,10 @@ class CRM_Accesscontrol_Config {
     'CRM_Report_Form_Mailing_Summary' => 'access CiviMail reports',
     'CRM_Contribute_Form_ContributionView' => 'access CiviContribute',
   );
+	
+	private $mailingPages = array(
+		'CRM_Mailing_Page_Event' => array('mid' => 'mid')
+	);
 
 
 
@@ -65,6 +69,10 @@ class CRM_Accesscontrol_Config {
   public function getPermissionsForForms() {
     return $this->permissionsForForms;
   }
+	
+	public function getMailingPages() {
+		return $this->mailingPages;
+	}
 
   public function getExtraPermissions(&$permissions) {
     $permissions['show changelog tab'] = ts('CiviCRM') . ': ' . ts('show Changelog tab');
