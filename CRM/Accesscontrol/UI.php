@@ -97,6 +97,15 @@ class CRM_Accesscontrol_UI {
     }
   }
 
+  public static function allowSendingEmailToContact(&$form) {
+  	$currentPage = get_class(CRM_Contact_Form_Task_Email);
+    if ($form instanceof CRM_Contact_Form_Task_Email && $form->get('cid')) {
+      if (!CRM_Contact_BAO_Contact_Permission::allow($form->get('cid'), CRM_Core_Permission::VIEW)) {
+      	self::returnAccessDenied($currentPage);
+			}
+		}
+  }
+
   public static function restrictPages(&$page) {
 
     $pagePermissions = CRM_Accesscontrol_Config::singleton()->getPermissionsForPages();

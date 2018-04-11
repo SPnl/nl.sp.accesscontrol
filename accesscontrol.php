@@ -136,6 +136,7 @@ function accesscontrol_civicrm_pageRun(&$page) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
  */
 function accesscontrol_civicrm_buildForm($formName, &$form) {
+	CRM_Accesscontrol_UI::allowSendingEmailToContact($form);
   CRM_Accesscontrol_UI::restrictForms($formName, $form);
   CRM_Accesscontrol_MessageTemplates_PermissionToChangeTemplate::restrictForm($formName, $form);
   CRM_Accesscontrol_SearchCustomGroup::buildForm($formName, $form);
