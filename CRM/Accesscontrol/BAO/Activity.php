@@ -284,8 +284,7 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
 
     $config = CRM_Core_Config::singleton();
 
-    $randomNum = md5(uniqid());
-    $activityTempTable = "civicrm_temp_activity_details_{$randomNum}";
+    $activityTempTable = CRM_Utils_SQL_TempTable::build()->setCategory('actdetail')->getName();
 
     $tableFields = array(
       'activity_id' => 'int unsigned',
@@ -354,9 +353,7 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
     $input['count'] = FALSE;
     list($sqlClause, $params) = self::getActivitySQLClause($input);
 
-    $query = "{$insertSQL}
-       SELECT DISTINCT tbl.*  from ( {$sqlClause} )
-as tbl ";
+    $query = sprintf("{$insertSQL} \n SELECT DISTINCT %s  from ( %s ) \n as tbl ", implode(', ', $selectColumns), $sqlClause);
 
     //filter case activities - CRM-5761
     $components = CRM_Activity_BAO_Activity::activityComponents();
@@ -371,7 +368,7 @@ LEFT JOIN  civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.ac
 
     // step 2: Get target and assignee contacts for above activities
     // create temp table for target contacts
-    $activityContactTempTable = "civicrm_temp_activity_contact_{$randomNum}";
+    $activityContactTempTable = CRM_Utils_SQL_TempTable::build()->setCategory('actcontact')->getName();
     $query = "CREATE TEMPORARY TABLE {$activityContactTempTable} (
                 activity_id int unsigned, contact_id int unsigned, record_type_id varchar(16),
                  contact_name varchar(255), is_deleted int unsigned, counter int unsigned, INDEX index_activity_id( activity_id ) )
@@ -388,31 +385,29 @@ SELECT     ac.activity_id,
            c.sort_name,
            c.is_deleted
 FROM       {$activityTempTable}
-INNER JOIN civicrm_activity a ON ( a.id = {$activityTempTable}.activity_id AND a.activity_type_id != {$bulkActivityTypeID} )
+INNER JOIN civicrm_activity a ON ( a.id = {$activityTempTable}.activity_id )
 INNER JOIN civicrm_activity_contact ac ON ( ac.activity_id = {$activityTempTable}.activity_id )
 INNER JOIN civicrm_contact c ON c.id = ac.contact_id
-
+WHERE ac.record_type_id != %1
 ";
-    CRM_Core_DAO::executeQuery($query);
+    $params = array(1 => array($targetID, 'Integer'));
+    CRM_Core_DAO::executeQuery($query, $params);
+
+    $activityFields = array("ac.activity_id", "ac.contact_id", "ac.record_type_id", "c.sort_name", "c.is_deleted");
+    $select = CRM_Contact_BAO_Query::appendAnyValueToSelect($activityFields, "ac.activity_id");
 
     // for each activity insert one target contact
     // if we load all target contacts the performance will suffer a lot for mass-activities;
     $query = "
 INSERT INTO {$activityContactTempTable} ( activity_id, contact_id, record_type_id, contact_name, is_deleted, counter )
-SELECT     ac.activity_id,
-           ac.contact_id,
-           ac.record_type_id,
-           c.sort_name,
-           c.is_deleted,
-           count(ac.contact_id)
+{$select}, count(ac.contact_id)
 FROM       {$activityTempTable}
-INNER JOIN civicrm_activity a ON ( a.id = {$activityTempTable}.activity_id AND a.activity_type_id = {$bulkActivityTypeID} )
+INNER JOIN civicrm_activity a ON ( a.id = {$activityTempTable}.activity_id )
 INNER JOIN civicrm_activity_contact ac ON ( ac.activity_id = {$activityTempTable}.activity_id )
 INNER JOIN civicrm_contact c ON c.id = ac.contact_id
 WHERE ac.record_type_id = %1
 GROUP BY ac.activity_id
 ";
-    $params = array(1 => array($targetID, 'Integer'));
     CRM_Core_DAO::executeQuery($query, $params);
 
     // step 3: Combine all temp tables to get final query for activity selector
@@ -423,9 +418,11 @@ SELECT     {$activityTempTable}.*,
            {$activityContactTempTable}.record_type_id,
            {$activityContactTempTable}.contact_name,
            {$activityContactTempTable}.is_deleted,
-           {$activityContactTempTable}.counter
+           {$activityContactTempTable}.counter,
+           re.parent_id as is_recurring_activity
 FROM       {$activityTempTable}
 INNER JOIN {$activityContactTempTable} on {$activityTempTable}.activity_id = {$activityContactTempTable}.activity_id
+LEFT JOIN civicrm_recurring_entity re on {$activityContactTempTable}.activity_id = re.entity_id
 ORDER BY    fixed_sort_order
         ";
 
@@ -452,25 +449,27 @@ ORDER BY    fixed_sort_order
       $values[$activityID]['status_id'] = $dao->status_id;
       $values[$activityID]['subject'] = $dao->subject;
       $values[$activityID]['campaign_id'] = $dao->campaign_id;
+      $values[$activityID]['is_recurring_activity'] = $dao->is_recurring_activity;
 
       if ($dao->campaign_id) {
         $values[$activityID]['campaign'] = $allCampaigns[$dao->campaign_id];
       }
 
-      if (!CRM_Utils_Array::value('assignee_contact_name', $values[$activityID])) {
+      if (empty($values[$activityID]['assignee_contact_name'])) {
         $values[$activityID]['assignee_contact_name'] = array();
       }
 
-      if (!CRM_Utils_Array::value('target_contact_name', $values[$activityID])) {
+      if (empty($values[$activityID]['target_contact_name'])) {
         $values[$activityID]['target_contact_name'] = array();
+        $values[$activityID]['target_contact_counter'] = $dao->counter;
       }
 
       // if deleted, wrap in <del>
-      if ( $dao->is_deleted ) {
-        $dao->contact_name = "<del>{$dao->contact_name}</dao>";
+      if ($dao->is_deleted) {
+        $dao->contact_name = "<del>{$dao->contact_name}</del>";
       }
 
-      if ($dao->record_type_id == $sourceID  && $dao->contact_id) {
+      if ($dao->record_type_id == $sourceID && $dao->contact_id) {
         $values[$activityID]['source_contact_id'] = $dao->contact_id;
         $values[$activityID]['source_contact_name'] = $dao->contact_name;
       }
@@ -489,13 +488,13 @@ ORDER BY    fixed_sort_order
         $values[$activityID]['case_subject'] = $dao->case_subject;
       }
       else {
-        $values[$activityID]['recipients'] =  ts('(%1 contacts)', array(1 => $dao->counter));
-        $values[$activityID]['mailingId'] = false;
+        $values[$activityID]['recipients'] = ts('(%1 recipients)', array(1 => $dao->counter));
+        $values[$activityID]['mailingId'] = FALSE;
         if (
           $accessCiviMail &&
           ($mailingIDs === TRUE || in_array($dao->source_record_id, $mailingIDs))
         ) {
-          $values[$activityID]['mailingId'] = true;
+          $values[$activityID]['mailingId'] = TRUE;
         }
       }
     }
