@@ -14,9 +14,20 @@ class CRM_Accesscontrol_BAO_Activity {
     // format the params
     $params['offset']   = ($params['page'] - 1) * $params['rp'];
     $params['rowCount'] = $params['rp'];
-    $params['sort']     = CRM_Utils_Array::value('sortBy', $params);
-    $params['caseId']   = NULL;
-    $context            = CRM_Utils_Array::value('context', $params);
+    $params['sort'] = CRM_Utils_Array::value('sortBy', $params);
+    $params['caseId'] = NULL;
+    $context = CRM_Utils_Array::value('context', $params);
+    $showContactOverlay = !CRM_Utils_String::startsWith($context, "dashlet");
+    $activityTypeInfo = civicrm_api3('OptionValue', 'get', array(
+        'option_group_id' => "activity_type",
+        'options' => array('limit' => 0),
+    ));
+    $activityIcons = array();
+    foreach ($activityTypeInfo['values'] as $type) {
+        if (!empty($type['icon'])) {
+            $activityIcons[$type['value']] = $type['icon'];
+        }
+    }
 
     // get contact activities
     $activities = CRM_Accesscontrol_BAO_Activity::getActivities($params);
@@ -41,90 +52,126 @@ class CRM_Accesscontrol_BAO_Activity {
       $mask = CRM_Core_Action::mask($permissions);
 
       foreach ($activities as $activityId => $values) {
-        $contactActivities[$activityId]['activity_type'] = $values['activity_type'];
-        $contactActivities[$activityId]['subject'] = $values['subject'];
+        $activity = array();
+        $activity['DT_RowId'] = $activityId;
+        // Add class to this row if overdue.
+        $activity['DT_RowClass'] = "crm-entity status-id-{$values['status_id']}";
+        if (self::isOverdue($values)) {
+          $activity['DT_RowClass'] .= ' status-overdue';
+        }
+        else {
+          $activity['DT_RowClass'] .= ' status-ontime';
+        }
+
+        $activity['DT_RowAttr'] = array();
+        $activity['DT_RowAttr']['data-entity'] = 'activity';
+        $activity['DT_RowAttr']['data-id'] = $activityId;
+
+        $activity['activity_type'] = (!empty($activityIcons[$values['activity_type_id']]) ? '<span class="crm-i ' . $activityIcons[$values['activity_type_id']] . '"></span> ' : '') . $values['activity_type'];
+        $activity['subject'] = $values['subject'];
+
+        $activity['source_contact_name'] = '';
+
         if ($params['contact_id'] == $values['source_contact_id']) {
           $contactActivities[$activityId]['source_contact'] = $values['source_contact_name'];
         }
         elseif ($values['source_contact_id']) {
-          $contactActivities[$activityId]['source_contact'] = CRM_Utils_System::href($values['source_contact_name'],
-            'civicrm/contact/view', "reset=1&cid={$values['source_contact_id']}");
+          $srcTypeImage = "";
+          if ($showContactOverlay) {
+            $srcTypeImage = CRM_Contact_BAO_Contact_Utils::getImage(
+                CRM_Contact_BAO_Contact::getContactType($values['source_contact_id']),
+                FALSE,
+                $values['source_contact_id']);
+          }
+          $activity['source_contact_name'] = $srcTypeImage . CRM_Utils_System::href($values['source_contact_name'],
+          'civicrm/contact/view', "reset=1&cid={$values['source_contact_id']}");
         }
         else {
-          $contactActivities[$activityId]['source_contact'] = '<em>n/a</em>';
+          $activity['source_contact_name'] = '<em>n/a</em>';
         }
 
+        $activity['target_contact_name'] = '';
         if (isset($values['mailingId']) && !empty($values['mailingId'])) {
-          $contactActivities[$activityId]['target_contact'] = CRM_Utils_System::href($values['recipients'],
+          $activity['target_contact'] = CRM_Utils_System::href($values['recipients'],
             'civicrm/mailing/report/event',
             "mid={$values['source_record_id']}&reset=1&event=queue&cid={$params['contact_id']}&context=activitySelector");
         }
-        elseif (CRM_Utils_Array::value('recipients', $values)) {
-          $contactActivities[$activityId]['target_contact'] = $values['recipients'];
+        elseif (!empty($values['recipients'])) {
+          $activity['target_contact_name'] = $values['recipients'];
         }
-        elseif (!$values['target_contact_name']) {
-          $contactActivities[$activityId]['target_contact'] = '<em>n/a</em>';
-        }
-        elseif (!empty($values['target_contact_name'])) {
-          $count = 0;
-          $contactActivities[$activityId]['target_contact'] = '';
-          foreach ($values['target_contact_name'] as $tcID => $tcName) {
-            if ($tcID && $count < 5) {
-              $contactActivities[$activityId]['target_contact'] .= CRM_Utils_System::href($tcName,
-                'civicrm/contact/view', "reset=1&cid={$tcID}");
-              $count++;
-              if ($count) {
-                $contactActivities[$activityId]['target_contact'] .= ";&nbsp;";
-              }
+        elseif (isset($values['target_contact_counter']) && $values['target_contact_counter']) {
+          $activity['target_contact_name'] = '';
+          $firstTargetName = reset($values['target_contact_name']);
+          $firstTargetContactID = key($values['target_contact_name']);
 
-              if ($count == 4) {
-                $contactActivities[$activityId]['target_contact'] .= "(" . ts('more') . ")";
-                break;
-              }
-            }
+          $targetLink = CRM_Utils_System::href($firstTargetName, 'civicrm/contact/view', "reset=1&cid={$firstTargetContactID}");
+          if ($showContactOverlay) {
+              $targetTypeImage = CRM_Contact_BAO_Contact_Utils::getImage(
+                  CRM_Contact_BAO_Contact::getContactType($firstTargetContactID),
+                  FALSE,
+                  $firstTargetContactID);
+              $activity['target_contact_name'] .= "<div>$targetTypeImage  $targetLink";
+          }
+          else {
+            $activity['target_contact_name'] .= $targetLink;
+          }
+
+
+          if ($extraCount = $values['target_contact_counter'] - 1) {
+            $activity['target_contact_name'] .= ";<br />" . "(" . ts('%1 more', array(1 => $extraCount)) . ")";
+          }
+          if ($showContactOverlay) {
+            $activity['target_contact_name'] .= "</div> ";
           }
         }
+        elseif (!$values['target_contact_name']) {
+          $activity['target_contact_name'] = '<em>n/a</em>';
+        }
 
+        $activity['assignee_contact_name'] = '';
         if (empty($values['assignee_contact_name'])) {
-          $contactActivities[$activityId]['assignee_contact'] = '<em>n/a</em>';
+          $activity['assignee_contact_name'] = '<em>n/a</em>';
         }
         elseif (!empty($values['assignee_contact_name'])) {
           $count = 0;
-          $contactActivities[$activityId]['assignee_contact'] = '';
+          $activity['assignee_contact_name'] = '';
           foreach ($values['assignee_contact_name'] as $acID => $acName) {
             if ($acID && $count < 5) {
-              $contactActivities[$activityId]['assignee_contact'] .= CRM_Utils_System::href($acName, 'civicrm/contact/view', "reset=1&cid={$acID}");
+              $assigneeTypeImage = "";
+              $assigneeLink = CRM_Utils_System::href($acName, 'civicrm/contact/view', "reset=1&cid={$acID}");
+              if ($showContactOverlay) {
+                $assigneeTypeImage = CRM_Contact_BAO_Contact_Utils::getImage(
+                    CRM_Contact_BAO_Contact::getContactType($acID),
+                    FALSE,
+                    $acID);
+                $activity['assignee_contact_name'] .= "<div>$assigneeTypeImage $assigneeLink";
+              }
+              else {
+                $activity['assignee_contact_name'] .= $assigneeLink;
+              }
               $count++;
               if ($count) {
-                $contactActivities[$activityId]['assignee_contact'] .= ";&nbsp;";
+                $activity['assignee_contact_name'] .= ";&nbsp;";
+              }
+              if ($showContactOverlay) {
+                $activity['assignee_contact_name'] .= "</div> ";
               }
 
               if ($count == 4) {
-                $contactActivities[$activityId]['assignee_contact'] .= "(" . ts('more') . ")";
+                $activity['assignee_contact_name'] .= "(" . ts('more') . ")";
                 break;
               }
             }
           }
         }
 
-        $contactActivities[$activityId]['activity_date'] = CRM_Utils_Date::customFormat($values['activity_date_time']);
-        $contactActivities[$activityId]['status'] = $activityStatus[$values['status_id']];
-
-        // add class to this row if overdue
-        $contactActivities[$activityId]['class'] = '';
-        if (CRM_Utils_Date::overdue(CRM_Utils_Array::value('activity_date_time', $values))
-          && CRM_Utils_Array::value('status_id', $values) == 1
-        ) {
-          $contactActivities[$activityId]['class'] = 'status-overdue';
-        }
-        else {
-          $contactActivities[$activityId]['class'] = 'status-ontime';
-        }
+        $activity['activity_date_time'] = CRM_Utils_Date::customFormat($values['activity_date_time']);
+        $activity['status_id'] = $activityStatus[$values['status_id']];
 
         // build links
-        $contactActivities[$activityId]['links'] = '';
+        $activity['links'] = '';
         $accessMailingReport = FALSE;
-        if (CRM_Utils_Array::value('mailingId', $values)) {
+        if (!empty($values['mailingId'])) {
           $accessMailingReport = TRUE;
         }
 
@@ -137,19 +184,34 @@ class CRM_Accesscontrol_BAO_Activity {
 
         $actionMask = array_sum(array_keys($actionLinks)) & $mask;
 
-        $contactActivities[$activityId]['links'] = CRM_Core_Action::formLink($actionLinks,
+        $activity['links'] = CRM_Core_Action::formLink($actionLinks,
           $actionMask,
           array(
             'id' => $values['activity_id'],
             'cid' => $params['contact_id'],
             'cxt' => $context,
             'caseid' => CRM_Utils_Array::value('case_id', $values),
-          )
+          ),
+            ts('more'),
+            FALSE,
+            'activity.tab.row',
+            'Activity',
+            $values['activity_id']
         );
+        if ($values['is_recurring_activity']) {
+          $activity['is_recurring_activity'] = CRM_Core_BAO_RecurringEntity::getPositionAndCount($values['activity_id'], 'civicrm_activity');
+        }
+
+        array_push($contactActivities, $activity);
       }
     }
 
-    return $contactActivities;
+    $activitiesDT = array();
+    $activitiesDT['data'] = $contactActivities;
+    $activitiesDT['recordsTotal'] = $params['total'];
+    $activitiesDT['recordsFiltered'] = $params['total'];
+
+    return $activitiesDT;
   }
 
   /**
